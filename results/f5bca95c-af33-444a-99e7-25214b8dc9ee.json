@@ -1,0 +1,167 @@
+{
+  "simulation_id": "f5bca95c-af33-444a-99e7-25214b8dc9ee",
+  "timestamp": "2026-07-24T11:56:32.022040+00:00",
+  "recipe_id": "scrambled_eggs_basic",
+  "model_version": "0.1.3",
+  "inputs": {
+    "pan_temperature_c": 150.0,
+    "duration_min": 4.0,
+    "initial_food_temperature_c": 20.0,
+    "time_step_sec": 1.0
+  },
+  "initial_state": {
+    "total_mass_g": 111.0,
+    "water_mass_g": 77.4,
+    "initial_protein_denaturation_fraction": 0.0
+  },
+  "outputs": {
+    "estimated_final_temperature_c": 132.68,
+    "cumulative_modeled_evaporative_temperature_reduction_c": 5.569,
+    "butter_melt_fraction": 1.0,
+    "protein_denaturation_fraction": 1.0,
+    "coagulation_description": "high modeled coagulation",
+    "estimated_water_loss_g": 1.007,
+    "remaining_water_mass_g": 76.393,
+    "estimated_final_mass_g": 109.993
+  },
+  "interpretation_status": "model output, not sensory measurement",
+  "domain_status": "outside_declared_domain",
+  "domain_warnings": [
+    {
+      "code": "W-DOMAIN-BM",
+      "severity": "medium",
+      "model": "butter_melting_v0.1",
+      "parameter": "food_temp_c",
+      "requested": 132.677924489139,
+      "valid_range": [
+        20.0,
+        60.0
+      ],
+      "message": "food_temp_c 132.677924489139 is outside declared domain [20.0, 60.0].",
+      "consequence": "Butter melt fraction is an extrapolation."
+    },
+    {
+      "code": "W-DOMAIN-PD",
+      "severity": "high",
+      "model": "protein_denaturation_v0.1",
+      "parameter": "food_temp_c",
+      "requested": 132.677924489139,
+      "valid_range": [
+        20.0,
+        90.0
+      ],
+      "message": "food_temp_c 132.677924489139 is outside declared domain [20.0, 90.0].",
+      "consequence": "Denaturation fraction is an extrapolation."
+    },
+    {
+      "code": "W-DOMAIN-EV",
+      "severity": "medium",
+      "model": "water_evaporation_v0.1",
+      "parameter": "food_temp_c",
+      "requested": 132.677924489139,
+      "valid_range": [
+        60.0,
+        100.0
+      ],
+      "message": "food_temp_c 132.677924489139 is outside declared domain [60.0, 100.0].",
+      "consequence": "Water loss estimate is an extrapolation."
+    }
+  ],
+  "phase_warnings": [
+    {
+      "code": "W-PHASE-001",
+      "severity": "high",
+      "model": "water_evaporation_v0.1",
+      "mixture_temperature_c": 132.68,
+      "water_fraction_remaining": 0.987,
+      "message": "Modeled mixture temperature exceeds the boiling region while substantial water remains.",
+      "consequence": "The current model does not represent boiling, vigorous evaporation, pressure effects, or phase-equilibrium temperature limits. Results above 100\u00b0C with significant water present are not physically realistic."
+    }
+  ],
+  "warnings": [
+    {
+      "code": "W-001",
+      "severity": "high",
+      "model": "mixture_heating_v0.1",
+      "message": "Heating-rate parameter is an unfitted placeholder.",
+      "consequence": "Temperature and all dependent outputs are not validated."
+    },
+    {
+      "code": "W-003",
+      "severity": "high",
+      "model": "water_evaporation_v0.1",
+      "message": "Evaporation-rate parameter is an unfitted placeholder.",
+      "consequence": "Water loss estimate is not validated."
+    }
+  ],
+  "model_status": "experimental",
+  "validation_status": "not validated",
+  "assumptions_active": [
+    "A-HT-001: Pan temperature remains constant",
+    "A-HT-002: Food mixture is thermally uniform",
+    "A-HT-004: Stirring produces uniform temperature",
+    "A-BM-001: Butter melting is linear between thresholds",
+    "A-BM-002: Butter temperature equals mixture temperature",
+    "A-PD-001: Egg white and yolk treated as uniform",
+    "A-PD-002: Denaturation is linear between thresholds",
+    "A-PD-003: Denaturation is irreversible",
+    "A-PD-004: Time-at-temperature effects not modeled",
+    "A-EV-001: Evaporation begins at 60\u00b0C threshold",
+    "A-EV-002: Entire surface is exposed",
+    "A-EV-003: Airflow is ignored",
+    "A-EV-004: No crust formation modeled",
+    "A-EV-005: No boiling transition modeled",
+    "A-EV-006: Latent heat of water is constant at 2260 J/g",
+    "A-EV-007: Mixture specific heat approximated as 3.7 J/(g*\u00b0C)",
+    "A-EV-008: Evaporation cooling is instantaneous within each step",
+    "A-SE-001: Denaturation fraction is primary driver of texture",
+    "A-SE-002: Water content drives perceived moisture",
+    "A-SE-003: Butter melt fraction drives perceived richness",
+    "A-SE-004: Sensory relationships are linear within declared ranges",
+    "A-SE-005: No cultural or individual perception variation modeled"
+  ],
+  "sensory_report": {
+    "sensory_model_version": "0.1.0",
+    "interpretation_status": "model output derived from physics simulation. Not a sensory measurement. Not validated against human tasting panels.",
+    "physics_confidence": {
+      "level": "very_low",
+      "description": "Physics output contains high-severity warnings or phase violations. Sensory scores are speculative.",
+      "high_severity_warnings": 3,
+      "medium_severity_warnings": 2,
+      "phase_warnings_present": true,
+      "physics_validated": false
+    },
+    "dimensions": {
+      "texture": {
+        "score": 0.35,
+        "descriptor": "firm, possibly rubbery",
+        "basis": "denaturation_fraction",
+        "input_value": 1.0,
+        "interpretation_status": "model rule, not sensory measurement"
+      },
+      "moisture": {
+        "score": 0.9,
+        "descriptor": "very moist",
+        "water_fraction_remaining": 0.987,
+        "basis": "remaining_water_mass / initial_water_mass",
+        "interpretation_status": "model rule, not sensory measurement"
+      },
+      "richness": {
+        "score": 0.9,
+        "descriptor": "rich, buttery",
+        "basis": "butter_melt_fraction",
+        "input_value": 1.0,
+        "interpretation_status": "model rule, not sensory measurement"
+      }
+    },
+    "chef_note": "Physics warnings present. Notes are speculative. | firm or rubbery texture, good moisture retention, rich buttery flavor.",
+    "not_yet_modeled": [
+      "browning and Maillard flavor",
+      "aroma compounds",
+      "saltiness from salt distribution",
+      "temperature at serving",
+      "visual appearance and color",
+      "individual perception variability"
+    ]
+  }
+}

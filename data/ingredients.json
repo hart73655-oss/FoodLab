@@ -1,0 +1,88 @@
+{
+  "version": "0.1.0",
+  "last_updated": "2026-07-22",
+
+  "ingredients": {
+    "egg_chicken_raw_whole": {
+      "name": "Raw whole chicken egg",
+      "category": "egg",
+
+      "sample_definition": {
+        "species": "Gallus gallus domesticus",
+        "state": "raw",
+        "components": "whole egg, white and yolk combined"
+      },
+
+      "composition": {
+        "water_mass_fraction": {
+          "value": 0.758,
+          "unit": "fraction",
+          "role": "reference",
+          "source_id": "source-to-be-confirmed"
+        },
+        "protein_mass_fraction": {
+          "value": 0.126,
+          "unit": "fraction",
+          "role": "reference",
+          "source_id": "source-to-be-confirmed"
+        },
+        "fat_mass_fraction": {
+          "value": 0.106,
+          "unit": "fraction",
+          "role": "reference",
+          "source_id": "source-to-be-confirmed"
+        }
+      }
+    },
+
+    "butter_unsalted": {
+      "name": "Unsalted butter",
+      "category": "fat",
+
+      "sample_definition": {
+        "state": "solid",
+        "components": "cream, churned"
+      },
+
+      "composition": {
+        "water_mass_fraction": {
+          "value": 0.160,
+          "unit": "fraction",
+          "role": "reference",
+          "source_id": "source-to-be-confirmed"
+        },
+        "fat_mass_fraction": {
+          "value": 0.810,
+          "unit": "fraction",
+          "role": "reference",
+          "source_id": "source-to-be-confirmed"
+        },
+        "protein_mass_fraction": {
+          "value": 0.009,
+          "unit": "fraction",
+          "role": "reference",
+          "source_id": "source-to-be-confirmed"
+        }
+      }
+    },
+
+    "salt_table": {
+      "name": "Table salt",
+      "category": "seasoning",
+
+      "sample_definition": {
+        "state": "solid",
+        "components": "sodium chloride"
+      },
+
+      "composition": {
+        "sodium_chloride_mass_fraction": {
+          "value": 0.990,
+          "unit": "fraction",
+          "role": "reference",
+          "source_id": "standard-reference"
+        }
+      }
+    }
+  }
+}

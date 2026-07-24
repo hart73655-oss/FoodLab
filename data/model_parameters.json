@@ -1,0 +1,69 @@
+{
+  "version": "0.1.0",
+
+  "parameters": {
+    "mixture_heating_v0.1": {
+      "heating_rate_per_second": {
+        "value": 0.01,
+        "unit": "1/second",
+        "role": "model_parameter",
+        "status": "unfitted_placeholder",
+        "note": "Not derived from experimental data. With pan=150C and duration=240s this predicts approximately 138C. Domain warnings are expected. Replace after validation.",
+        "source_id": "internal-placeholder"
+      }
+    },
+
+    "whole_egg_denaturation_v0.1": {
+      "ingredient_id": "egg_chicken_raw_whole",
+      "start_temperature_c": {
+        "value": 62.0,
+        "unit": "celsius",
+        "role": "model_parameter",
+        "status": "simplified",
+        "note": "Represents approximate onset of visible coagulation. Egg white and yolk differ. This model treats them as uniform.",
+        "source_id": "source-to-be-confirmed"
+      },
+      "complete_temperature_c": {
+        "value": 80.0,
+        "unit": "celsius",
+        "role": "model_parameter",
+        "status": "simplified",
+        "note": "Represents approximate completion of coagulation under simplified uniform model.",
+        "source_id": "source-to-be-confirmed"
+      },
+      "valid_domain": {
+        "food_temperature_c_min": 20.0,
+        "food_temperature_c_max": 90.0
+      }
+    },
+
+    "butter_melting_v0.1": {
+      "ingredient_id": "butter_unsalted",
+      "start_temperature_c": {
+        "value": 28.0,
+        "unit": "celsius",
+        "role": "model_parameter",
+        "status": "simplified",
+        "source_id": "source-to-be-confirmed"
+      },
+      "complete_temperature_c": {
+        "value": 35.0,
+        "unit": "celsius",
+        "role": "model_parameter",
+        "status": "simplified",
+        "source_id": "source-to-be-confirmed"
+      }
+    },
+
+    "water_evaporation_v0.1": {
+      "evaporation_rate_g_per_sec_per_celsius": {
+        "value": 0.0001,
+        "unit": "g/(s*celsius)",
+        "role": "model_parameter",
+        "status": "unfitted_placeholder",
+        "note": "Not derived from experimental data. Chosen to produce visible but not extreme water loss over 4 minutes at high temperature. Replace after validation against measured data.",
+        "source_id": "internal-placeholder"
+      }
+    }
+  }
+}

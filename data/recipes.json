@@ -1,0 +1,26 @@
+{
+  "version": "0.1.0",
+
+  "recipes": {
+    "scrambled_eggs_basic": {
+      "name": "Scrambled Eggs",
+      "description": "Basic scrambled eggs in butter",
+
+      "ingredients": {
+        "egg_chicken_raw_whole": {
+          "amount_g": 100.0,
+          "role": "simulation_input",
+          "notes": "approximately 2 large eggs"
+        },
+        "butter_unsalted": {
+          "amount_g": 10.0,
+          "role": "simulation_input"
+        },
+        "salt_table": {
+          "amount_g": 1.0,
+          "role": "simulation_input"
+        }
+      }
+    }
+  }
+}
