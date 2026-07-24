@@ -258,14 +258,61 @@ def print_summary(result: dict, elapsed_sec: float) -> None:
         sr   = result["sensory_report"]
         pc   = sr["physics_confidence"]
         dims = sr["dimensions"]
+        ca   = sr.get("chef_assessment", {})
 
         print("\n  SENSORY REPORT")
         print("  " + "-" * 56)
-        print(f"  Confidence       : {pc['level']}")
-        print(f"  Texture          : {dims['texture']['descriptor']}")
-        print(f"  Moisture         : {dims['moisture']['descriptor']}")
+        print(
+            f"  Confidence       : {pc['label']} "
+            f"(score {pc['score']:.2f})"
+        )
+        print(f"  Phase violation  : {sr['phase_violation_active']}")
+
+        if pc.get("reason"):
+            for r in pc["reason"]:
+                print(f"    ↓ {r}")
+
+        tex = dims["texture"]
+        mst = dims["moisture"]
+        app = dims.get("appearance", {})
+
+        print(f"  Texture          : ", end="")
+        if tex.get("score") is None:
+            print("SUPPRESSED")
+        else:
+            print(tex["descriptor"])
+            sd = tex.get("sub_dimensions", {})
+            if sd:
+                for name, val in sd.items():
+                    print(f"    {name:<12}: {val['score']:.2f}")
+
+        print(f"  Moisture         : ", end="")
+        if mst.get("score") is None:
+            print("SUPPRESSED")
+        else:
+            print(mst["descriptor"])
+
         print(f"  Richness         : {dims['richness']['descriptor']}")
+
+        print(f"  Appearance       : ", end="")
+        if app.get("score") is None and app.get("descriptor") == \
+                dims["texture"].get("descriptor"):
+            print("SUPPRESSED")
+        elif app.get("color"):
+            print(f"{app['color']}, {app['surface']}")
+        else:
+            print("SUPPRESSED")
+
         print(f"  Chef note        : {sr['chef_note']}")
+
+        if ca.get("verdict"):
+            print(f"  Verdict          : {ca['verdict']}")
+        if ca.get("suitability"):
+            print(f"  Suitability      : {ca['suitability']}")
+        if ca.get("issues"):
+            for issue in ca["issues"]:
+                print(f"    ⚠ {issue}")
+
         print(
             f"  Status           : "
             f"{truncate(sr['interpretation_status'])}"
