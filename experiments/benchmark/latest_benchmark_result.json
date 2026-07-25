@@ -1,0 +1,552 @@
+{
+  "benchmark_schema_version": "1.0",
+  "benchmark_id": "EGG-BENCHMARK-001",
+  "benchmark_status": "draft_not_validated",
+  "benchmark_runner_version": "0.2.3",
+  "model_version": "0.1.7",
+  "timestamp": "2026-07-25T11:32:30.630823+00:00",
+  "summary": {
+    "total": 28,
+    "pass": 8,
+    "fail": 5,
+    "suppressed": 15,
+    "missing": 0,
+    "evaluable": 13
+  },
+  "physics_health": {
+    "models": {
+      "Heating model": {
+        "status": "\u2717 Needs calibration",
+        "mean_error": 0.18,
+        "note": "Drives temperature \u2192 denaturation \u2192 tenderness",
+        "basis": "signature_observed"
+      },
+      "Evaporation model": {
+        "status": "\u2717 Needs calibration",
+        "mean_error": 0.0,
+        "note": "Drives water loss \u2192 juiciness \u2192 creaminess",
+        "basis": "signature_observed"
+      },
+      "Maillard model": {
+        "status": "\u2717 Needs calibration",
+        "mean_error": 0.0,
+        "note": "Drives browning \u2192 roastedness \u2192 crunch",
+        "basis": "signature_observed"
+      },
+      "Burn model": {
+        "status": "\u2717 Needs calibration",
+        "mean_error": 0.0375,
+        "note": "Drives burn \u2192 bitterness",
+        "basis": "signature_observed"
+      }
+    },
+    "readiness": "LOW \u2014 calibration required before meaningful evaluation"
+  },
+  "root_cause_analysis": [
+    {
+      "pipeline_step": 1,
+      "root_cause": "Heating model (heating_rate parameter)",
+      "fix": "Run EXP-0001. Fit heating_rate with fit_heating_rate.py.",
+      "drives": [
+        "protein_denaturation_fraction",
+        "tenderness",
+        "creaminess"
+      ],
+      "mechanism": "Heating rate controls temperature trajectory. If too fast, denaturation saturates at 1.0 under every condition. All conditions predict equal denaturation regardless of pan temp.",
+      "signature": "denaturation == 1.0 under all conditions",
+      "signature_observed": true,
+      "failing_dimensions": [
+        {
+          "dimension": "protein_denaturation_fraction",
+          "mean_error": 0.0875
+        },
+        {
+          "dimension": "tenderness",
+          "mean_error": 0.55
+        },
+        {
+          "dimension": "creaminess",
+          "mean_error": 0.5551
+        }
+      ],
+      "suppressed_dimensions": 6,
+      "total_error": 1.1926,
+      "confidence": 0.95,
+      "evidence": [
+        "Denaturation saturates at 1.0 under all 4 conditions. Signature of an overestimated heating rate."
+      ],
+      "health_key": "Heating model"
+    },
+    {
+      "pipeline_step": 2,
+      "root_cause": "Evaporation model (evaporation_rate parameter)",
+      "fix": "Run EXP-0002. Weigh food before and after cooking.",
+      "drives": [
+        "juiciness",
+        "creaminess",
+        "surface_crunch"
+      ],
+      "mechanism": "Evaporation rate controls water loss. If too low, juiciness barely changes across conditions. High and low heat produce almost identical moisture outputs.",
+      "signature": "juiciness variation < 0.05 across all conditions",
+      "signature_observed": true,
+      "failing_dimensions": [
+        {
+          "dimension": "creaminess",
+          "mean_error": 0.5551
+        }
+      ],
+      "suppressed_dimensions": 9,
+      "total_error": 0.5551,
+      "confidence": 0.88,
+      "evidence": [
+        "Juiciness range: 0.0386. Expected > 0.5. Evaporation barely responds to temperature.",
+        "Note: creaminess is a shared failure with heating model. Cannot isolate evaporation contribution until heating is calibrated."
+      ],
+      "health_key": "Evaporation model"
+    },
+    {
+      "pipeline_step": 3,
+      "root_cause": "Maillard browning model (browning parameters)",
+      "fix": "Calibrate heating_rate first. Then adjust browning onset and rate.",
+      "drives": [
+        "roastedness",
+        "surface_crunch",
+        "bitterness_burn"
+      ],
+      "mechanism": "Browning onset uses a sigmoid centered at 140\u00b0C. With placeholder heating, surface temperature barely reaches onset. After temperature calibration, browning should activate more clearly.",
+      "signature": "roastedness < 0.01 even at 200\u00b0C pan temperature",
+      "signature_observed": true,
+      "failing_dimensions": [
+        {
+          "dimension": "bitterness_burn",
+          "mean_error": 0.0375
+        }
+      ],
+      "suppressed_dimensions": 6,
+      "total_error": 0.0375,
+      "confidence": 0.82,
+      "evidence": [
+        "Roastedness < 0.01 at all conditions including 200\u00b0C. Browning model is not activating."
+      ],
+      "health_key": "Maillard model"
+    },
+    {
+      "pipeline_step": 4,
+      "root_cause": "Burn model (burn_rate_multiplier, sustained exposure)",
+      "fix": "Calibrate browning first. Burn depends on browning accumulation.",
+      "drives": [
+        "bitterness_burn"
+      ],
+      "mechanism": "Burn requires browning_index > 0.5 AND sustained high-temp exposure. If browning never accumulates, burn index stays at zero. Fix the Maillard model upstream before addressing burn.",
+      "signature": "bitterness_burn == 0.0 under all conditions",
+      "signature_observed": true,
+      "failing_dimensions": [
+        {
+          "dimension": "bitterness_burn",
+          "mean_error": 0.0375
+        }
+      ],
+      "suppressed_dimensions": 0,
+      "total_error": 0.0375,
+      "confidence": 0.7,
+      "evidence": [
+        "Burn bitterness is zero everywhere. Expected when browning never accumulates."
+      ],
+      "health_key": "Burn model"
+    }
+  ],
+  "conditions": [
+    {
+      "condition_id": "COND-001",
+      "label": "Gentle cook",
+      "pan_temp_c": 120.0,
+      "duration_min": 2.0,
+      "evaluation": {
+        "protein_denaturation_fraction": {
+          "status": "FAIL",
+          "value": 1.0,
+          "expected_min": 0.5,
+          "expected_max": 0.75,
+          "error": 0.25,
+          "label": "tender range",
+          "note": "Soft, custardy set. Not fully cooked.",
+          "evidence": []
+        },
+        "juiciness": {
+          "status": "PASS",
+          "value": 0.8985,
+          "expected_min": 0.8,
+          "expected_max": 1.0,
+          "error": 0.0,
+          "label": "very juicy",
+          "note": "Low temperature, short duration \u2014 minimal water loss.",
+          "evidence": [
+            "High water retention (100%) suggests good moisture.",
+            "High protein denaturation (100%) tightens the protein network, reducing perceived juiciness."
+          ]
+        },
+        "tenderness": {
+          "status": "FAIL",
+          "value": 0.2,
+          "expected_min": 0.75,
+          "expected_max": 1.0,
+          "error": -0.55,
+          "label": "tender",
+          "note": "Denaturation in optimal range.",
+          "evidence": [
+            "Protein denaturation is near complete (100%).",
+            "Protein network is fully set and contracted.",
+            "Texture is likely firm and rubbery."
+          ]
+        },
+        "roastedness": {
+          "status": "PASS",
+          "value": 0.0,
+          "expected_min": 0.0,
+          "expected_max": 0.1,
+          "error": 0.0,
+          "label": "none to faint",
+          "note": "Temperature too low for significant Maillard reaction.",
+          "evidence": [
+            "Surface browning index is near zero. No significant Maillard reaction has occurred."
+          ]
+        },
+        "creaminess": {
+          "status": "FAIL",
+          "value": 0.0449,
+          "expected_min": 0.6,
+          "expected_max": 1.0,
+          "error": -0.5551,
+          "label": "creamy",
+          "note": "High moisture, fat present, moderate set.",
+          "evidence": [
+            "Water retention (100%) contributes to creaminess.",
+            "Fat presence (estimated fraction 0.15) provides mouthfeel.",
+            "Protein denaturation (100%) is outside the optimal range for creamy texture."
+          ]
+        },
+        "bitterness_burn": {
+          "status": "PASS",
+          "value": 0.0,
+          "expected_min": 0.0,
+          "expected_max": 0.05,
+          "error": 0.0,
+          "label": "none",
+          "note": "No burn risk at this temperature.",
+          "evidence": [
+            "No significant burn index. Burning-derived bitterness is negligible."
+          ]
+        },
+        "surface_crunch": {
+          "status": "PASS",
+          "value": 0.0,
+          "expected_min": 0.0,
+          "expected_max": 0.05,
+          "error": 0.0,
+          "label": "none",
+          "note": "Low temperature, high moisture.",
+          "evidence": [
+            "Browning index (0.00) is insufficient for meaningful crunch.",
+            "Surface dryness (0%) \u2014 high moisture prevents crunch."
+          ]
+        }
+      },
+      "perception_confidence": "moderate",
+      "physics_confidence": 0.5
+    },
+    {
+      "condition_id": "COND-002",
+      "label": "Standard cook",
+      "pan_temp_c": 150.0,
+      "duration_min": 4.0,
+      "evaluation": {
+        "protein_denaturation_fraction": {
+          "status": "FAIL",
+          "value": 1.0,
+          "expected_min": 0.7,
+          "expected_max": 0.9,
+          "error": 0.1,
+          "label": "firm to well set",
+          "note": "Standard scrambled egg doneness.",
+          "evidence": []
+        },
+        "juiciness": {
+          "status": "SUPPRESSED",
+          "value": 0.887,
+          "expected_min": 0.6,
+          "expected_max": 0.85,
+          "error": null,
+          "label": "juicy",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "High water retention (99%) suggests good moisture.",
+            "High protein denaturation (100%) tightens the protein network, reducing perceived juiciness."
+          ]
+        },
+        "tenderness": {
+          "status": "SUPPRESSED",
+          "value": 0.2,
+          "expected_min": 0.5,
+          "expected_max": 0.75,
+          "error": null,
+          "label": "firm to tender",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Protein denaturation is near complete (100%).",
+            "Protein network is fully set and contracted.",
+            "Texture is likely firm and rubbery."
+          ]
+        },
+        "roastedness": {
+          "status": "SUPPRESSED",
+          "value": 0.0,
+          "expected_min": 0.05,
+          "expected_max": 0.25,
+          "error": null,
+          "label": "faint to light",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Surface browning index is near zero. No significant Maillard reaction has occurred."
+          ]
+        },
+        "creaminess": {
+          "status": "SUPPRESSED",
+          "value": 0.0444,
+          "expected_min": 0.4,
+          "expected_max": 0.7,
+          "error": null,
+          "label": "slightly creamy to creamy",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Water retention (99%) contributes to creaminess.",
+            "Fat presence (estimated fraction 0.15) provides mouthfeel.",
+            "Protein denaturation (100%) is outside the optimal range for creamy texture."
+          ]
+        },
+        "bitterness_burn": {
+          "status": "PASS",
+          "value": 0.0,
+          "expected_min": 0.0,
+          "expected_max": 0.1,
+          "error": 0.0,
+          "label": "none",
+          "note": "No burn risk with proper attention.",
+          "evidence": [
+            "No significant burn index. Burning-derived bitterness is negligible."
+          ]
+        },
+        "surface_crunch": {
+          "status": "SUPPRESSED",
+          "value": 0.0,
+          "expected_min": 0.0,
+          "expected_max": 0.15,
+          "error": null,
+          "label": "none to slight",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Browning index (0.00) is insufficient for meaningful crunch.",
+            "Surface dryness (1%) \u2014 high moisture prevents crunch."
+          ]
+        }
+      },
+      "perception_confidence": "very_low",
+      "physics_confidence": 0.1
+    },
+    {
+      "condition_id": "COND-003",
+      "label": "High heat unstirred",
+      "pan_temp_c": 180.0,
+      "duration_min": 4.0,
+      "evaluation": {
+        "protein_denaturation_fraction": {
+          "status": "PASS",
+          "value": 1.0,
+          "expected_min": 0.85,
+          "expected_max": 1.0,
+          "error": 0.0,
+          "label": "fully set",
+          "note": "High temperature causes complete denaturation.",
+          "evidence": []
+        },
+        "juiciness": {
+          "status": "SUPPRESSED",
+          "value": 0.8816,
+          "expected_min": 0.3,
+          "expected_max": 0.6,
+          "error": null,
+          "label": "slightly dry",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "High water retention (98%) suggests good moisture.",
+            "High protein denaturation (100%) tightens the protein network, reducing perceived juiciness."
+          ]
+        },
+        "tenderness": {
+          "status": "SUPPRESSED",
+          "value": 0.2,
+          "expected_min": 0.15,
+          "expected_max": 0.4,
+          "error": null,
+          "label": "tough to rubbery",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Protein denaturation is near complete (100%).",
+            "Protein network is fully set and contracted.",
+            "Texture is likely firm and rubbery."
+          ]
+        },
+        "roastedness": {
+          "status": "SUPPRESSED",
+          "value": 0.0001,
+          "expected_min": 0.2,
+          "expected_max": 0.55,
+          "error": null,
+          "label": "light to medium roast",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Surface browning index is near zero. No significant Maillard reaction has occurred."
+          ]
+        },
+        "creaminess": {
+          "status": "SUPPRESSED",
+          "value": 0.0442,
+          "expected_min": 0.05,
+          "expected_max": 0.3,
+          "error": null,
+          "label": "not creamy",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Water retention (98%) contributes to creaminess.",
+            "Fat presence (estimated fraction 0.15) provides mouthfeel.",
+            "Protein denaturation (100%) is outside the optimal range for creamy texture."
+          ]
+        },
+        "bitterness_burn": {
+          "status": "PASS",
+          "value": 0.0,
+          "expected_min": 0.0,
+          "expected_max": 0.2,
+          "error": 0.0,
+          "label": "none to faint char",
+          "note": "Risk of burn edges if left unattended.",
+          "evidence": [
+            "No significant burn index. Burning-derived bitterness is negligible."
+          ]
+        },
+        "surface_crunch": {
+          "status": "SUPPRESSED",
+          "value": 0.0,
+          "expected_min": 0.15,
+          "expected_max": 0.5,
+          "error": null,
+          "label": "slight to crunchy",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Browning index (0.00) is insufficient for meaningful crunch.",
+            "Surface dryness (2%) \u2014 high moisture prevents crunch."
+          ]
+        }
+      },
+      "perception_confidence": "very_low",
+      "physics_confidence": 0.1
+    },
+    {
+      "condition_id": "COND-004",
+      "label": "Very high heat extended",
+      "pan_temp_c": 200.0,
+      "duration_min": 6.0,
+      "evaluation": {
+        "protein_denaturation_fraction": {
+          "status": "PASS",
+          "value": 1.0,
+          "expected_min": 0.95,
+          "expected_max": 1.0,
+          "error": 0.0,
+          "label": "complete",
+          "note": "Fully denatured.",
+          "evidence": []
+        },
+        "juiciness": {
+          "status": "SUPPRESSED",
+          "value": 0.8599,
+          "expected_min": 0.05,
+          "expected_max": 0.35,
+          "error": null,
+          "label": "dry",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "High water retention (96%) suggests good moisture.",
+            "High protein denaturation (100%) tightens the protein network, reducing perceived juiciness."
+          ]
+        },
+        "tenderness": {
+          "status": "SUPPRESSED",
+          "value": 0.2,
+          "expected_min": 0.05,
+          "expected_max": 0.25,
+          "error": null,
+          "label": "tough, rubbery",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Protein denaturation is near complete (100%).",
+            "Protein network is fully set and contracted.",
+            "Texture is likely firm and rubbery."
+          ]
+        },
+        "roastedness": {
+          "status": "SUPPRESSED",
+          "value": 0.0023,
+          "expected_min": 0.4,
+          "expected_max": 0.85,
+          "error": null,
+          "label": "medium to strong roast",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Surface browning index is near zero. No significant Maillard reaction has occurred."
+          ]
+        },
+        "creaminess": {
+          "status": "SUPPRESSED",
+          "value": 0.0432,
+          "expected_min": 0.0,
+          "expected_max": 0.1,
+          "error": null,
+          "label": "none",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Water retention (96%) contributes to creaminess.",
+            "Fat presence (estimated fraction 0.15) provides mouthfeel.",
+            "Protein denaturation (100%) is outside the optimal range for creamy texture."
+          ]
+        },
+        "bitterness_burn": {
+          "status": "FAIL",
+          "value": 0.0,
+          "expected_min": 0.15,
+          "expected_max": 0.6,
+          "error": -0.15,
+          "label": "noticeable to strong",
+          "note": "Burning likely.",
+          "evidence": [
+            "No significant burn index. Burning-derived bitterness is negligible."
+          ]
+        },
+        "surface_crunch": {
+          "status": "SUPPRESSED",
+          "value": 0.0001,
+          "expected_min": 0.3,
+          "expected_max": 0.8,
+          "error": null,
+          "label": "crunchy to very crunchy",
+          "note": "Phase-state violation active (W-PHASE-001). Physical outputs are not realistic. Perceptual conversion from invalid physics is suppressed.",
+          "evidence": [
+            "Browning index (0.00) is insufficient for meaningful crunch.",
+            "Surface dryness (4%) \u2014 high moisture prevents crunch."
+          ]
+        }
+      },
+      "perception_confidence": "very_low",
+      "physics_confidence": 0.1
+    }
+  ]
+}

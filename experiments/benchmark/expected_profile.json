@@ -1,0 +1,219 @@
+{
+  "benchmark_id": "EGG-BENCHMARK-001",
+  "version": "0.1.0",
+  "status": "draft_not_validated",
+  "description": "Expected perceptual profiles for scrambled egg under four cooking conditions. Values are based on culinary judgment, not physical measurement. Used to validate FoodLab perceptual predictions after heating calibration.",
+  "reviewed_by": null,
+  "review_date": null,
+  "note": "These expected values represent reasonable culinary expectations. They are not ground truth. A food scientist or experienced cook should review and adjust them before treating this benchmark as authoritative.",
+
+  "conditions": [
+    {
+      "condition_id": "COND-001",
+      "label": "Gentle cook",
+      "pan_temperature_c": 120.0,
+      "duration_min": 2.0,
+      "technique": "stirred",
+      "expected": {
+        "protein_denaturation_fraction": {
+          "min": 0.50,
+          "max": 0.75,
+          "label": "tender range",
+          "note": "Soft, custardy set. Not fully cooked."
+        },
+        "juiciness": {
+          "min": 0.80,
+          "max": 1.00,
+          "label": "very juicy",
+          "note": "Low temperature, short duration — minimal water loss."
+        },
+        "tenderness": {
+          "min": 0.75,
+          "max": 1.00,
+          "label": "tender",
+          "note": "Denaturation in optimal range."
+        },
+        "roastedness": {
+          "min": 0.00,
+          "max": 0.10,
+          "label": "none to faint",
+          "note": "Temperature too low for significant Maillard reaction."
+        },
+        "creaminess": {
+          "min": 0.60,
+          "max": 1.00,
+          "label": "creamy",
+          "note": "High moisture, fat present, moderate set."
+        },
+        "bitterness_burn": {
+          "min": 0.00,
+          "max": 0.05,
+          "label": "none",
+          "note": "No burn risk at this temperature."
+        },
+        "surface_crunch": {
+          "min": 0.00,
+          "max": 0.05,
+          "label": "none",
+          "note": "Low temperature, high moisture."
+        }
+      }
+    },
+
+    {
+      "condition_id": "COND-002",
+      "label": "Standard cook",
+      "pan_temperature_c": 150.0,
+      "duration_min": 4.0,
+      "technique": "stirred",
+      "expected": {
+        "protein_denaturation_fraction": {
+          "min": 0.70,
+          "max": 0.90,
+          "label": "firm to well set",
+          "note": "Standard scrambled egg doneness."
+        },
+        "juiciness": {
+          "min": 0.60,
+          "max": 0.85,
+          "label": "juicy",
+          "note": "Some water loss but egg retains moisture."
+        },
+        "tenderness": {
+          "min": 0.50,
+          "max": 0.75,
+          "label": "firm to tender",
+          "note": "Approaching but not exceeding rubbery range."
+        },
+        "roastedness": {
+          "min": 0.05,
+          "max": 0.25,
+          "label": "faint to light",
+          "note": "Some Maillard reaction if unstirred. Less if stirred."
+        },
+        "creaminess": {
+          "min": 0.40,
+          "max": 0.70,
+          "label": "slightly creamy to creamy",
+          "note": "Depends on stirring. Stirred eggs stay creamier."
+        },
+        "bitterness_burn": {
+          "min": 0.00,
+          "max": 0.10,
+          "label": "none",
+          "note": "No burn risk with proper attention."
+        },
+        "surface_crunch": {
+          "min": 0.00,
+          "max": 0.15,
+          "label": "none to slight",
+          "note": "Stirring prevents significant crust."
+        }
+      }
+    },
+
+    {
+      "condition_id": "COND-003",
+      "label": "High heat unstirred",
+      "pan_temperature_c": 180.0,
+      "duration_min": 4.0,
+      "technique": "unstirred",
+      "expected": {
+        "protein_denaturation_fraction": {
+          "min": 0.85,
+          "max": 1.00,
+          "label": "fully set",
+          "note": "High temperature causes complete denaturation."
+        },
+        "juiciness": {
+          "min": 0.30,
+          "max": 0.60,
+          "label": "slightly dry",
+          "note": "Significant water loss at high temperature."
+        },
+        "tenderness": {
+          "min": 0.15,
+          "max": 0.40,
+          "label": "tough to rubbery",
+          "note": "Overcooked protein network."
+        },
+        "roastedness": {
+          "min": 0.20,
+          "max": 0.55,
+          "label": "light to medium roast",
+          "note": "Significant Maillard reaction at surface."
+        },
+        "creaminess": {
+          "min": 0.05,
+          "max": 0.30,
+          "label": "not creamy",
+          "note": "Low moisture, high denaturation."
+        },
+        "bitterness_burn": {
+          "min": 0.00,
+          "max": 0.20,
+          "label": "none to faint char",
+          "note": "Risk of burn edges if left unattended."
+        },
+        "surface_crunch": {
+          "min": 0.15,
+          "max": 0.50,
+          "label": "slight to crunchy",
+          "note": "Dry surface + browning = crunch."
+        }
+      }
+    },
+
+    {
+      "condition_id": "COND-004",
+      "label": "Very high heat extended",
+      "pan_temperature_c": 200.0,
+      "duration_min": 6.0,
+      "technique": "unstirred",
+      "expected": {
+        "protein_denaturation_fraction": {
+          "min": 0.95,
+          "max": 1.00,
+          "label": "complete",
+          "note": "Fully denatured."
+        },
+        "juiciness": {
+          "min": 0.05,
+          "max": 0.35,
+          "label": "dry",
+          "note": "Severe water loss."
+        },
+        "tenderness": {
+          "min": 0.05,
+          "max": 0.25,
+          "label": "tough, rubbery",
+          "note": "Completely overcooked."
+        },
+        "roastedness": {
+          "min": 0.40,
+          "max": 0.85,
+          "label": "medium to strong roast",
+          "note": "Heavy Maillard reaction."
+        },
+        "creaminess": {
+          "min": 0.00,
+          "max": 0.10,
+          "label": "none",
+          "note": "No moisture, no creaminess."
+        },
+        "bitterness_burn": {
+          "min": 0.15,
+          "max": 0.60,
+          "label": "noticeable to strong",
+          "note": "Burning likely."
+        },
+        "surface_crunch": {
+          "min": 0.30,
+          "max": 0.80,
+          "label": "crunchy to very crunchy",
+          "note": "Dry and heavily browned surface."
+        }
+      }
+    }
+  ]
+}
