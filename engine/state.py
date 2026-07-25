@@ -11,16 +11,12 @@ from datetime import datetime, timezone
 
 @dataclass
 class TimeStep:
-    """
-    Lightweight snapshot of simulation state at one time point.
-    Stored in SimulationResult.history.
-    One entry per simulation step.
-    """
     elapsed_sec:              float
     food_temp_c:              float
     effective_surface_temp_c: float
     water_mass_g:             float
     total_mass_g:             float
+    total_water_loss_g:       float         
     butter_melt_fraction:     float
     protein_denaturation:     float
     browning_index:           float
@@ -36,6 +32,7 @@ class TimeStep:
             "effective_surface_temp_c": round(self.effective_surface_temp_c, 3),
             "water_mass_g":             round(self.water_mass_g, 3),
             "total_mass_g":             round(self.total_mass_g, 3),
+            "total_water_loss_g":       round(self.total_water_loss_g, 3), 
             "butter_melt_fraction":     round(self.butter_melt_fraction, 4),
             "protein_denaturation":     round(self.protein_denaturation, 4),
             "browning_index":           round(self.browning_index, 4),
@@ -89,6 +86,7 @@ class SimulationState:
             effective_surface_temp_c= self.effective_surface_temp_c,
             water_mass_g=             self.water_mass_g,
             total_mass_g=             self.total_mass_g,
+            total_water_loss_g=       self.total_water_loss_g,    
             butter_melt_fraction=     self.butter_melt_fraction,
             protein_denaturation=     self.protein_denaturation_fraction,
             browning_index=           self.browning_index,

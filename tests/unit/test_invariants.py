@@ -75,10 +75,6 @@ def get_result(
 
 
 def get_history(result: dict) -> list[TimeStep]:
-    """
-    Reconstructs TimeStep objects from history dicts.
-    Explicitly passes only the fields TimeStep expects.
-    """
     steps = []
     for step_dict in result.get("history", []):
         steps.append(TimeStep(
@@ -87,6 +83,7 @@ def get_history(result: dict) -> list[TimeStep]:
             effective_surface_temp_c= step_dict["effective_surface_temp_c"],
             water_mass_g=             step_dict["water_mass_g"],
             total_mass_g=             step_dict["total_mass_g"],
+            total_water_loss_g=       step_dict.get("total_water_loss_g", 0.0),
             butter_melt_fraction=     step_dict["butter_melt_fraction"],
             protein_denaturation=     step_dict["protein_denaturation"],
             browning_index=           step_dict["browning_index"],
@@ -315,31 +312,40 @@ def test_history_step_sizes_do_not_exceed_requested_dt():
 
 def test_mass_balance_across_history():
     """
-    At every step:
-        initial_mass == current_mixture_mass + water_lost_so_far
+    Stronger mass balance: compares two independently maintained
+    quantities against each other.
 
-    Water lost so far = initial_mass - current total_mass.
-    This checks strict mass conservation across the timeline.
+    At every step:
+        step.total_mass_g + step.total_water_loss_g == initial_mass
+
+    This checks that the engine's own tracked cumulative water loss
+    is consistent with the mixture mass, not just that the arithmetic
+    derived from initial_mass is self-consistent.
+
+    Requires total_water_loss_g to be stored in TimeStep.
+    If it is not, this falls back to the derived check with a warning.
     """
     result       = get_result()
     history      = result["history"]
     initial_mass = result["initial_state"]["total_mass_g"]
 
     for step in history:
-        water_lost_so_far = initial_mass - step["total_mass_g"]
-
-        assert water_lost_so_far >= -1e-6, (
-            f"Negative water loss implied at {step['elapsed_sec']}s: "
-            f"{water_lost_so_far}"
-        )
-        reconstructed = step["total_mass_g"] + water_lost_so_far
-        assert abs(reconstructed - initial_mass) <= 1e-6, (
-            f"Mass balance violated at {step['elapsed_sec']}s: "
-            f"total={step['total_mass_g']}, "
-            f"lost={water_lost_so_far}, "
-            f"sum={reconstructed}, "
-            f"expected={initial_mass}"
-        )
+        if "total_water_loss_g" in step:
+            # Strong check: two independently tracked quantities
+            reconstructed = step["total_mass_g"] + step["total_water_loss_g"]
+            assert abs(reconstructed - initial_mass) <= 1e-6, (
+                f"Mass balance violated at {step['elapsed_sec']}s: "
+                f"mixture={step['total_mass_g']:.6f} + "
+                f"loss={step['total_water_loss_g']:.6f} = "
+                f"{reconstructed:.6f}, expected {initial_mass:.6f}"
+            )
+        else:
+            # Fallback: derived check (weaker but still catches sign errors)
+            water_lost_so_far = initial_mass - step["total_mass_g"]
+            assert water_lost_so_far >= -1e-6, (
+                f"Negative water loss implied at {step['elapsed_sec']}s: "
+                f"{water_lost_so_far:.6f}"
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -458,13 +464,21 @@ def test_events_are_chronological():
 def test_event_ids_are_unique():
     """
     Each event_id should appear at most once.
-    Events are one-shot: they fire when a threshold is first crossed.
+    Uses Counter for O(n) duplicate detection.
     """
-    events = get_result()["events"]
-    ids    = [event["event_id"] for event in events]
-    assert len(ids) == len(set(ids)), (
-        f"Duplicate event IDs detected: "
-        f"{[x for x in ids if ids.count(x) > 1]}"
+    from collections import Counter
+
+    events    = get_result()["events"]
+    ids       = [event["event_id"] for event in events]
+    counts    = Counter(ids)
+    duplicates = [
+        event_id
+        for event_id, count in counts.items()
+        if count > 1
+    ]
+
+    assert not duplicates, (
+        f"Duplicate event IDs detected: {duplicates}"
     )
 
 
