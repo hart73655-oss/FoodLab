@@ -2,6 +2,7 @@
   "version": "0.1.0",
 
   "parameters": {
+
     "mixture_heating_v0.1": {
       "heating_rate_per_second": {
         "value": 0.01,
@@ -64,6 +65,110 @@
         "note": "Not derived from experimental data. Chosen to produce visible but not extreme water loss over 4 minutes at high temperature. Replace after validation against measured data.",
         "source_id": "internal-placeholder"
       }
+    },
+
+    "browning_v0.1": {
+      "ingredient_id": "egg_chicken_raw_whole",
+
+      "pan_surface_weight": {
+        "value": 0.30,
+        "unit": "dimensionless",
+        "role": "model_parameter",
+        "status": "unfitted_placeholder",
+        "note": "Weight given to pan temperature in effective_surface_temp blend. 0.30 means surface is approximately 70% food temperature plus 30% pan temperature. Not derived from heat-transfer theory.",
+        "source_id": "internal-placeholder"
+      },
+
+      "base_rate_per_second": {
+        "value": 0.0008,
+        "unit": "browning_index/second",
+        "role": "model_parameter",
+        "status": "unfitted_placeholder",
+        "note": "Browning rate at onset center temperature with no moisture suppression. Not fitted to experimental data.",
+        "source_id": "internal-placeholder"
+      },
+
+      "q10_factor": {
+        "value": 2.0,
+        "unit": "dimensionless",
+        "role": "model_parameter",
+        "status": "unfitted_placeholder",
+        "note": "Rate doubles per 10 degrees Celsius above onset center. Standard Q10 biological approximation. Not validated for Maillard reaction in eggs.",
+        "source_id": "internal-placeholder"
+      },
+
+      "onset_center_c": {
+        "value": 140.0,
+        "unit": "celsius",
+        "role": "model_parameter",
+        "status": "simplified",
+        "note": "Sigmoid center temperature where onset factor equals 0.50. Literature range 140 to 150 degrees Celsius for food surfaces.",
+        "source_id": "source-to-be-confirmed"
+      },
+
+      "onset_steepness": {
+        "value": 0.15,
+        "unit": "1/celsius",
+        "role": "model_parameter",
+        "status": "unfitted_placeholder",
+        "note": "Controls sigmoid sharpness. Higher value means sharper onset transition. Not fitted to experimental data.",
+        "source_id": "internal-placeholder"
+      },
+
+      "moisture_suppression_exponent": {
+        "value": 2.0,
+        "unit": "dimensionless",
+        "role": "model_parameter",
+        "status": "unfitted_placeholder",
+        "note": "Controls how strongly water fraction suppresses browning rate. Not fitted to experimental data.",
+        "source_id": "internal-placeholder"
+      },
+
+      "burn_rate_multiplier": {
+        "value": 1.5,
+        "unit": "dimensionless",
+        "role": "model_parameter",
+        "status": "unfitted_placeholder",
+        "note": "Scales burn index progression beyond browning threshold. Not fitted to experimental data.",
+        "source_id": "internal-placeholder"
+      },
+
+      "stickiness_protein_weight": {
+        "value": 0.7,
+        "unit": "dimensionless",
+        "role": "model_parameter",
+        "status": "unfitted_placeholder",
+        "note": "Scales protein denaturation contribution to stickiness index. Not fitted to experimental data.",
+        "source_id": "internal-placeholder"
+      },
+
+      "stickiness_temp_weight": {
+        "value": 0.4,
+        "unit": "dimensionless",
+        "role": "model_parameter",
+        "status": "unfitted_placeholder",
+        "note": "Scales surface temperature contribution to stickiness index. Not fitted to experimental data.",
+        "source_id": "internal-placeholder"
+      },
+
+      "butter_protection_exponent": {
+        "value": 1.5,
+        "unit": "dimensionless",
+        "role": "model_parameter",
+        "status": "unfitted_placeholder",
+        "note": "Controls how effectively butter melt fraction reduces stickiness. Not fitted to experimental data.",
+        "source_id": "internal-placeholder"
+      },
+
+      "valid_domain": {
+        "food_temperature_c_min": 20.0,
+        "food_temperature_c_max": 200.0,
+        "pan_temperature_c_min":  80.0,
+        "pan_temperature_c_max":  250.0,
+        "water_fraction_min": 0.0,
+        "water_fraction_max": 1.0
+      }
     }
+
   }
 }
